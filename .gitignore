@@ -1,3 +1,5 @@
+folder1/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -37,6 +39,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
+tests/
 htmlcov/
 .tox/
 .nox/

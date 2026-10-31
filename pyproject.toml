@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "reactance"
+version = "0.1.0"
+description = "Shape-aware, audio-reactive ambient display simulator"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+# Windows only: live capture (WASAPI loopback) and now-playing cover art (SMTC).
+audio = ["PyAudioWPatch>=0.2.12; sys_platform == 'win32'"]
+render = ["moderngl>=5.10", "glfw>=2.7"]
+nowplaying = [
+    "winrt-runtime>=2.0; sys_platform == 'win32'",
+    "winrt-Windows.Foundation>=2.0; sys_platform == 'win32'",
+    "winrt-Windows.Foundation.Collections>=2.0; sys_platform == 'win32'",
+    "winrt-Windows.Media.Control>=2.0; sys_platform == 'win32'",
+    "winrt-Windows.Storage.Streams>=2.0; sys_platform == 'win32'",
+]
+svg = ["svgelements>=1.9"]   # only for custom SVG shapes
+dev = ["pytest>=8", "ruff>=0.6"]
+all = ["reactance[audio,render,svg,nowplaying]"]
+
+[project.scripts]
+reactance = "reactance.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/reactance"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "NPY"]

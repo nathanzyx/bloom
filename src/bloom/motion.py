@@ -216,12 +216,16 @@ def initial_state(shape: Shape) -> PatternState:
 # under ~0.75 so the pulse always overlaps the core: it swells the outline
 # rather than floating off as a separate bubble.
 TRAVEL = (0.45, 0.75)
-LIFE = (1.2, 2.4) # seconds
+LIFE = (1.2, 2.4) # seconds, in loud music
+# Calm music makes slower pulses: they live up to CALM_EXTRA_LIFE seconds
+# longer and glide out on a gentler curve (see NoisePulse.ease), so their
+# initial speed is about 4x lower than in loud music.
+CALM_EXTRA_LIFE = 1.4
 
 
-def _ease_out(u: float) -> float:
+def _ease_out(u: float, power: float = 3.0) -> float:
     u = min(1.0, max(0.0, u))
-    return 1.0 - (1.0 - u) ** 3
+    return 1.0 - (1.0 - u) ** power
 
 
 @dataclass
@@ -231,11 +235,12 @@ class NoisePulse:
     travel: float # final offset of the centre, in blob radii
     life: float # seconds
     age: float = 0.0
+    ease: float = 3.0 # ease-out power: 3 = fast start that slows (loud), 2 = gentler (calm)
 
     def as_uniform(self) -> tuple[float, float, float, float]:
         """(centre x, centre y) in blob radii, radius in blob radii, strength."""
         u = min(1.0, self.age / self.life)
-        d = self.travel * _ease_out(u) # glides out, slowing down
+        d = self.travel * _ease_out(u, self.ease) # glides out, slowing down
         radius = 0.85 + 0.25 * u # spreads a little as it goes
         # Fades in over the first moments (it starts inside the core), carries
         # the core's heat out for the first ~30% of its life, then melts.
@@ -273,13 +278,14 @@ class PulseEmitter:
             theta = rng.uniform(0, 2 * math.pi)
             if all(abs((theta - p.theta + math.pi) % (2 * math.pi) - math.pi) > 1.2 for p in self.pulses): break
         lo, hi = TRAVEL
-        
+        k = min(1.0, intensity) # 0 = calm, 1 = loud
         self.spawned += 1
         self.pulses.append(NoisePulse(
             theta=theta,
             drift=rng.uniform(-0.25, 0.25),
-            travel=(lo + (hi - lo) * min(1.0, intensity)) * rng.uniform(0.9, 1.1),
-            life=rng.uniform(*LIFE),
+            travel=(lo + (hi - lo) * k) * rng.uniform(0.9, 1.1),
+            life=rng.uniform(*LIFE) + CALM_EXTRA_LIFE * (1.0 - k),
+            ease=2.0 + k,
         ))
 
 

@@ -4,7 +4,9 @@ An audio-reactive ambient display inspired by Apple's **HomePod**. Bloom listens
 your computer is playing and renders a soft, glowing blob that moves with the
 music, coloured by the album art of the current track.
 
-*This project was made with the assistance of AI.*
+<video src="./demo/demo_usage_1.mp4" autoplay muted loop controls width="20%"></video>
+
+*Developed with Claude (Anthropic) as a coding assistant. I set the design, direction and feature decisions and tested and tuned it against real audio.*
 
 ## Features
 
@@ -18,8 +20,11 @@ music, coloured by the album art of the current track.
 ## Noise Model
 
 - **Noise blob.** A soft round noise grows out from the centre of the shape. Its radius comes from the music's volume and bass, and 4D simplex noise (position + time) gives the outline a slow wobble.
-- **Noise pulses.** Randomized noise areas are generated at the center and drift outwards while fading in intensity. The fields are added together so the main noise body swells towards the pulses and melts back into one smooth shape rather than visually detaching from the main noise body.
+
+- **Noise pulses.** Randomized noise areas are generated at the center and drift outwards while fading in intensity. Fields are added together so the main noise body swells towards the pulses and melts back into one smooth shape instead of visually detaching from the main noise body.
+
 - **Brightness and colour.** Intensity is highest at the centre and tapers off towards the edge, plus extra from kicks and snare waves which appear as intensity waves which move outwards as they lose intensity. Low intensities are represented by the album colour, higher intensities fade towards white.
+
 - **Reactivity.** A velocity gives higher intensity audio moments a longer lasting corresponding visual intensity so that noise does not rapidly increase and decrease.
 
 ## Requirements
@@ -60,3 +65,14 @@ Some useful options:
 Run `python -m bloom --help` for the full list.
 
 Settings are stored in `%APPDATA%\reactance\settings.json`.
+
+## Short Demos
+
+### Calm
+<video src="./demo/demo_usage_3.mp4" autoplay muted loop controls width="20%"></video>
+
+### More Reactive
+<video src="./demo/demo_usage_2.mp4" autoplay muted loop controls width="20%"></video>
+
+### Pausing
+<video src="./demo/demo_pause_1.mp4" autoplay muted loop controls width="20%"></video>

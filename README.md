@@ -6,6 +6,12 @@ music, coloured by the album art of the current track.
 
 <video src="./demo/demo_usage_1.mp4" autoplay muted loop controls width="20%"></video>
 
+https://github.com/user-attachments/assets/5420308f-1b89-4a2e-86b2-ee3136e6396f
+
+
+
+
+
 *Developed with Claude (Anthropic) as a coding assistant. I set the design, direction and feature decisions and tested and tuned it against real audio.*
 
 ## Features
@@ -71,8 +77,19 @@ Settings are stored in `%APPDATA%\reactance\settings.json`.
 ### Calm
 <video src="./demo/demo_usage_3.mp4" autoplay muted loop controls width="20%"></video>
 
+https://github.com/user-attachments/assets/77cd2497-bf7c-47e7-a509-538a5d1d73cb
+
+
+
 ### More Reactive
 <video src="./demo/demo_usage_2.mp4" autoplay muted loop controls width="20%"></video>
 
+https://github.com/user-attachments/assets/b70e305b-728f-4814-b8fa-dcdf0cd0b9b9
+
+
+
+
 ### Pausing
 <video src="./demo/demo_pause_1.mp4" autoplay muted loop controls width="20%"></video>
+
+https://github.com/user-attachments/assets/918f2810-649d-4cd6-afc8-db880da92df5

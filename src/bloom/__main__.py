@@ -1,11 +1,11 @@
 """Entry point: display window + control panel, and the loop that drives them.
 
-  python -m reactance                                  # live audio, colours from now playing
-  python -m reactance --shape my_shape.svg --energy 0.8
-  python -m reactance --wav song.wav                   # analyse a file instead
-  python -m reactance --demo                           # built-in drum groove
-  python -m reactance --no-panel                       # display only
-  python -m reactance --reset-settings                 # start from the defaults
+  python -m bloom                                  # live audio, colours from now playing
+  python -m bloom --shape my_shape.svg --energy 0.8
+  python -m bloom --wav song.wav                   # analyse a file instead
+  python -m bloom --demo                           # built-in drum groove
+  python -m bloom --no-panel                       # display only
+  python -m bloom --reset-settings                 # start from the defaults
 
 Settings are saved automatically (to the per-user config folder) and restored
 on the next run. A flag given on the command line overrides the saved value.
@@ -136,7 +136,7 @@ class App:
 
 
 def main(argv: list[str] | None = None) -> None:
-    ap = argparse.ArgumentParser(prog="reactance", description=__doc__,
+    ap = argparse.ArgumentParser(prog="bloom", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     # Defaults are None: a flag left out keeps the saved value (or the default).
     ap.add_argument("--shape", help='"circle", "fullscreen", or an SVG file')

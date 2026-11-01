@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "reactance"
+name = "bloom"
 version = "0.1.0"
 description = "Shape-aware, audio-reactive ambient display simulator"
 readme = "README.md"
@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 dependencies = [
     "numpy>=1.26",
     "pillow>=10.0",
+    "sv-ttk>=2.6",
 ]
 
 [project.optional-dependencies]
@@ -26,13 +27,13 @@ nowplaying = [
 ]
 svg = ["svgelements>=1.9"]   # only for custom SVG shapes
 dev = ["pytest>=8", "ruff>=0.6"]
-all = ["reactance[audio,render,svg,nowplaying]"]
+all = ["bloom[audio,render,svg,nowplaying]"]
 
 [project.scripts]
-reactance = "reactance.__main__:main"
+bloom = "bloom.__main__:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/reactance"]
+packages = ["src/bloom"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -166,7 +166,7 @@ class DisplayWindow:
     rebuilding anything.
     """
 
-    def __init__(self, size: tuple[int, int] = (720, 720), title: str = "reactance") -> None:
+    def __init__(self, size: tuple[int, int] = (720, 720), title: str = "bloom") -> None:
         try:
             import glfw
             import moderngl

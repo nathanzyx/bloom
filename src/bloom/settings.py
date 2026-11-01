@@ -32,11 +32,12 @@ class Settings:
     background: tuple[float, float, float] = (0.0, 0.0, 0.0) # sRGB: the display color when idle
     frame: tuple[float, float, float] = (0.0, 0.0, 0.0) # sRGB: the material color outside the display
     idle_glow: float = 0.5 # >0: idle screen = dim palette colour (0..1). overrides background color if >0
-    energy: float = 1.0 # 0 = low reactance, 1 = high reactance
-    balance: float = 0.2062937062937063 # 0 = mostly low intensity, 1 = mostly high
-    size: float = 1.1045454545454547 # overall blob size: 0 = small .. SIZE_MAX = largest
-    branching: float = 1.0 # how often noise pulses swell out: 0 = never
-    waves: float = 1.0 # snare waves (the pulsing ring): 0 = off
+    # (these five are the "Medium" preset, see PRESETS)
+    energy: float = 0.29 # 0 = low reactance, 1 = high reactance
+    balance: float = 0.21 # 0 = mostly low intensity, 1 = mostly high
+    size: float = 1.3 # overall blob size: 0 = small .. SIZE_MAX = largest
+    branching: float = 0.64 # how often noise pulses swell out: 0 = never
+    waves: float = 0.3 # snare waves (the pulsing ring): 0 = off
     edge_margin: float = 0.385 # fraction of the shape's depth
 
     def copy(self) -> Settings:
@@ -66,6 +67,13 @@ _INVALID = object()
 
 # what each panel tab's "Reset to defaults" button covers.
 REACTANCE_KEYS = ("energy", "size", "balance", "branching", "waves")
+
+# The Bloom tab's preset buttons. Medium is also the default.
+PRESETS = {
+    "Calm": dict(energy=0.08, size=1.3, balance=0.2, branching=0.3, waves=0.0),
+    "Medium (Default)": dict(energy=0.29, size=1.3, balance=0.21, branching=0.64, waves=0.3),
+    "More Reactive": dict(energy=1.0, size=1.1, balance=0.21, branching=1.0, waves=1.0),
+}
 DISPLAY_KEYS = ("shape", "background", "frame", "idle_glow", "edge_margin")
 
 

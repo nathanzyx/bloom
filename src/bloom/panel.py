@@ -8,10 +8,11 @@
 
 from __future__ import annotations
 import tkinter as tk
+import sv_ttk
 from tkinter import colorchooser, filedialog, ttk
 from .colour import Palette
 from .motion import SIZE_MAX
-from .settings import DISPLAY_KEYS, REACTANCE_KEYS, Settings
+from .settings import DISPLAY_KEYS, PRESETS, REACTANCE_KEYS, Settings
 from .shape import CIRCLE, FULLSCREEN
 
 
@@ -25,20 +26,30 @@ class ControlPanel:
         self.settings = settings
         self.alive = True
         root = self.root = tk.Tk()
+        sv_ttk.set_theme("dark")
         root.title("Control Panel")
         root.protocol("WM_DELETE_WINDOW", self._close)
-        root.resizable(False, True)
+        root.resizable(True, True)
+        # Everything stretches with the window, so it can be widened again if
+        # Windows shrinks it (that happens when it's dragged between monitors
+        # with different display scaling).
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
         pad = {"padx": 10, "pady": 4}
         # Tabs keep the window short enough for a 1080p screen with display
         # scaling; the input meters stay visible below them.
         outer = ttk.Frame(root, padding=8)
         outer.grid(sticky="nsew")
+        outer.columnconfigure(0, weight=1)
+        outer.rowconfigure(0, weight=1)
         notebook = ttk.Notebook(outer)
         notebook.grid(row=0, column=0, sticky="nsew")
         tab_react = ttk.Frame(notebook, padding=6)
         tab_display = ttk.Frame(notebook, padding=6)
-        notebook.add(tab_react, text="Reactance")
+        notebook.add(tab_react, text="Bloom")
         notebook.add(tab_display, text="Display")
+        for tab in (tab_react, tab_display):
+            tab.columnconfigure(1, weight=1)
         row = 0
         frm = tab_react
 
@@ -50,13 +61,16 @@ class ControlPanel:
 
         # ======== Reactance tab ========
         # ---- reactivity ----
-        row = self._slider(frm, row, "Low reactance (gradual)", "High (immediate)", "energy", 0.0, 1.0)
-        row = self._slider(frm, row, "Small blob", "Large blob", "size", 0.0, SIZE_MAX)
-        row = self._slider(frm, row, "Mostly low intensity", "Mostly high", "balance", 0.0, 1.0)
-        row = self._slider(frm, row, "No pulses", "Frequent pulses", "branching", 0.0, 1.0)
-        row = self._slider(frm, row, "Snare waves: off", "Strong", "waves", 0.0, 1.0)
-        ttk.Button(frm, text="Reset to defaults", command=lambda: self._reset(REACTANCE_KEYS)).grid(
-            row=row, column=0, columnspan=3, sticky="e", padx=10, pady=(12, 4))
+        row = self._slider(frm, row, "Reactance", "Gradual", "Immediate", "energy", 0.0, 1.0)
+        row = self._slider(frm, row, "Blob size", "Small", "Large", "size", 0.0, SIZE_MAX)
+        row = self._slider(frm, row, "Intensity", "Mostly low", "Mostly high", "balance", 0.0, 1.0)
+        row = self._slider(frm, row, "Noise pulses", "None", "Frequent", "branching", 0.0, 1.0)
+        row = self._slider(frm, row, "Snare waves", "Off", "Strong", "waves", 0.0, 1.0)
+        presets = ttk.Frame(frm)
+        presets.grid(row=row, column=0, columnspan=3, sticky="e", padx=6, pady=(12, 4))
+        for i, name in enumerate(PRESETS):
+            ttk.Button(presets, text=name, command=lambda n=name: self._preset(n)).grid(
+                row=0, column=i, padx=4)
         row += 1
 
         # ======== Display tab ========
@@ -116,6 +130,7 @@ class ControlPanel:
         # ======== always visible ========
         frm, row = ttk.Frame(outer), 0
         frm.grid(row=1, column=0, sticky="we")
+        frm.columnconfigure(1, weight=1)
         # ---- meters ----
         section("Input")
         self.device_lbl = ttk.Label(frm, text="Listening to: …")
@@ -125,6 +140,10 @@ class ControlPanel:
         self.meters.grid(row=row, column=0, columnspan=3, sticky="we", **pad)
         row += 1
 
+        # Never smaller than the layout needs (a floor for the shrinking above).
+        root.update_idletasks()
+        root.minsize(root.winfo_reqwidth(), 300)
+
     # ------------------------------------------------------------ helpers --
     def _close(self) -> None:
         self.alive = False
@@ -132,14 +151,19 @@ class ControlPanel:
     def _set(self, key: str, value) -> None:
         setattr(self.settings, key, value)
 
-    def _slider(self, frm, row: int, left: str, right: str, key: str, lo: float, hi: float) -> int:
-        ttk.Label(frm, text=left).grid(row=row, column=0, sticky="w", padx=10)
-        ttk.Label(frm, text=right).grid(row=row, column=2, sticky="e", padx=10)
+    def _slider(self, frm, row: int, title: str, left: str, right: str, key: str,
+                lo: float, hi: float) -> int:
+        """A header, the slider, and what each end means underneath."""
+        ttk.Label(frm, text=title, font=("Segoe UI", 10, "bold")).grid(
+            row=row, column=0, columnspan=3, sticky="w", padx=10, pady=(10, 0))
         var = tk.DoubleVar(value=getattr(self.settings, key))
         setattr(self, f"_{key}_var", var)
-        ttk.Scale(frm, from_=lo, to=hi, variable=var, length=300, command=lambda v: self._set(key, float(v))).grid(
-            row=row + 1, column=0, columnspan=3, sticky="we", padx=10, pady=4)
-        return row + 2
+        ttk.Scale(frm, from_=lo, to=hi, variable=var, length=300,
+                  command=lambda v: self._set(key, float(v))).grid(
+            row=row + 1, column=0, columnspan=3, sticky="we", padx=10, pady=(2, 0))
+        ttk.Label(frm, text=left, foreground="#9a9aa2").grid(row=row + 2, column=0, sticky="w", padx=10)
+        ttk.Label(frm, text=right, foreground="#9a9aa2").grid(row=row + 2, column=2, sticky="e", padx=10)
+        return row + 3
 
     # ---- shape ----
     def _set_shape(self, shape: str) -> None:
@@ -148,6 +172,11 @@ class ControlPanel:
     # ---- reset ----
     def _reset(self, keys) -> None:
         self.settings.reset(keys)
+        self.refresh()
+
+    def _preset(self, name: str) -> None:
+        for key, value in PRESETS[name].items():
+            setattr(self.settings, key, value)
         self.refresh()
 
     def refresh(self) -> None:
